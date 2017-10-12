@@ -40,7 +40,7 @@ func main() {
 		cmd = exec.Command("lp", "-d", dest)
 		// cmd = exec.Command("cat", "-n")
 		printer.Stdout, _ = cmd.StdinPipe()
-		cmd.Stdout = os.Stderr
+		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		// when subprocess is done, join it
 		go func() {
