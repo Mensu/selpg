@@ -13,11 +13,11 @@ go get github.com/mensu/selpg
 - 从输入文件 ``input_file`` 中选取第 10 ~ 20 页（每页 2 行）打印
 
 ```
-./selpg -s11 -e20 -l2 input_file
+$GOPATH/bin/selpg -s11 -e20 -l2 input_file
 ```
 
 - 查看帮助
 
 ```
-./selpg -h
+$GOPATH/bin/selpg -h
 ```
