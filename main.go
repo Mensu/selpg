@@ -35,7 +35,7 @@ func main() {
 	joinSubProc := make(chan time.Time)
 	var cmd *exec.Cmd
 
-	// set output to where
+	// set where to output to
 	if len(dest) > 0 {
 		cmd = exec.Command("lp", "-d", dest)
 		// cmd = exec.Command("cat", "-n")
@@ -49,7 +49,7 @@ func main() {
 		}()
 	}
 
-	// set input from where
+	// set where to input from
 	var input = os.Stdin
 	var readPagenum uint
 	if len(filename) > 0 {
