@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"os/exec"
 	"time"
@@ -33,18 +34,18 @@ func main() {
 	dest, _ := flagset.GetString(flagInfo["d"])
 
 	joinSubProc := make(chan time.Time)
-	var cmd *exec.Cmd
+	var subproc *exec.Cmd
 
 	// set where to output to
 	if len(dest) > 0 {
-		cmd = exec.Command("lp", "-d", dest)
-		// cmd = exec.Command("cat", "-n")
-		printer.Stdout, _ = cmd.StdinPipe()
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		subproc = exec.Command("lp", "-d", dest)
+		// subproc = exec.Command("cat", "-n")
+		printer.Stdout, _ = subproc.StdinPipe()
+		subproc.Stdout = os.Stdout
+		subproc.Stderr = os.Stderr
 		// when subprocess is done, join it
 		go func() {
-			cmd.Run()
+			subproc.Run()
 			joinSubProc <- time.Now()
 		}()
 	}
@@ -80,11 +81,8 @@ func main() {
 	}
 
 	// try to join subprocess
-	if cmd != nil {
-		// await the subprocess for at most 1 sec
-		go func() {
-			joinSubProc <- <-time.After(time.Second)
-		}()
+	if subproc != nil {
+		printer.Stdout.(io.WriteCloser).Close()
 		// join subprocess
 		<-joinSubProc
 	}
