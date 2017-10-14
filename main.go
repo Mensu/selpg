@@ -57,7 +57,7 @@ func main() {
 		input, err = os.Open(filename)
 		defer input.Close()
 		if err != nil {
-			printer.ErrPrintf("Unexpected error when opening %s: %v\n", filename, err)
+			printer.ErrPrintln(err)
 			os.Exit(1)
 		}
 	}
