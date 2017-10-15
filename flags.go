@@ -61,7 +61,7 @@ func processFlags() error {
 	flagset.UintP(flagInfo["e"], "e", 0, "end_page, must be specified and no smaller than start_page")
 	flagset.UintP(flagInfo["l"], "l", 72, "page_size, exclusive to -f")
 	flagset.BoolP(flagInfo["f"], "f", false, "use \\f instead of page_size to delimit a page, exclusive to -l")
-	flagset.StringP(flagInfo["d"], "d", "", "output to where, default to stdout")
+	flagset.StringP(flagInfo["d"], "d", "", "printer to output to (default stdout)")
 
 	// parse flags
 	err := flagset.Parse(os.Args[1:])
