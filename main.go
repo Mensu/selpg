@@ -5,15 +5,14 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"time"
 )
 
-var printer *Printer
+var logger *Logger
 var err error
 
 func main() {
 	// construct global printer
-	printer = &Printer{
+	logger = &Logger{
 		os.Args[0],
 		os.Stdout,
 		os.Stderr,
@@ -22,7 +21,7 @@ func main() {
 	// process flags
 	err = processFlags()
 	if err != nil {
-		printer.ErrPrintf("%v\n%s", err, flagset.FlagUsagesWrapped(0))
+		logger.ErrPrintf("%v\n%s", err, flagset.FlagUsagesWrapped(0))
 		os.Exit(2)
 	}
 
@@ -33,21 +32,20 @@ func main() {
 	useF, _ := flagset.GetBool(flagInfo["f"])
 	dest, _ := flagset.GetString(flagInfo["d"])
 
-	joinSubProc := make(chan time.Time)
 	var subproc *exec.Cmd
 
 	// set where to output to
 	if len(dest) > 0 {
 		subproc = exec.Command("lp", "-d", dest)
 		// subproc = exec.Command("cat", "-n")
-		printer.Stdout, _ = subproc.StdinPipe()
+		logger.Stdout, err = subproc.StdinPipe()
+		if err != nil {
+			logger.ErrPrintf("Failed to send data to printer %s: %v\n", dest, err)
+			os.Exit(1)
+		}
 		subproc.Stdout = os.Stdout
 		subproc.Stderr = os.Stderr
-		// when subprocess is done, join it
-		go func() {
-			subproc.Run()
-			joinSubProc <- time.Now()
-		}()
+		subproc.Start()
 	}
 
 	// set where to input from
@@ -57,7 +55,7 @@ func main() {
 		input, err = os.Open(filename)
 		defer input.Close()
 		if err != nil {
-			printer.ErrPrintln(err)
+			logger.ErrPrintln(err)
 			os.Exit(1)
 		}
 	}
@@ -72,18 +70,17 @@ func main() {
 
 	// inform errors
 	if err == errStartOutOfRange {
-		printer.ErrPrintf("start_page (%d) greater than total pages (%d), no output written\n", startPagenum, readPagenum)
+		logger.ErrPrintf("start_page (%d) greater than total pages (%d), no output written\n", startPagenum, readPagenum)
 	} else if err == errEndOutOfRange {
-		printer.ErrPrintf("end_page (%d) greater than total pages (%d), less output than expected\n", endPagenum, readPagenum)
+		logger.ErrPrintf("end_page (%d) greater than total pages (%d), less output than expected\n", endPagenum, readPagenum)
 	} else if err != nil {
-		printer.ErrPrintf("Unexpected error on page %d: %v\n", readPagenum, err)
+		logger.ErrPrintf("Unexpected error on page %d: %v\n", readPagenum, err)
 		os.Exit(1)
 	}
 
-	// try to join subprocess
 	if subproc != nil {
-		printer.Stdout.(io.WriteCloser).Close()
-		// join subprocess
-		<-joinSubProc
+		logger.Stdout.(io.WriteCloser).Close()
+		// await subprocess
+		subproc.Wait()
 	}
 }

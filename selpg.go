@@ -35,10 +35,10 @@ func selpgByLine(reader *bufio.Reader, startPagenum uint, endPagenum uint, pageS
 		line = strings.TrimSuffix(line, "\r\n")
 		line = strings.TrimSuffix(line, "\n")
 		if err == nil {
-			printer.Println(line)
+			logger.Println(line)
 			continue
 		} else if err == io.EOF {
-			printer.Print(line)
+			logger.Print(line)
 			if pagenum < endPagenum {
 				return pagenum, errEndOutOfRange
 			}
@@ -64,10 +64,10 @@ func selpgByF(reader *bufio.Reader, startPagenum uint, endPagenum uint) (uint, e
 			continue
 		}
 		if err == nil {
-			printer.Print(line)
+			logger.Print(line)
 			continue
 		} else if err == io.EOF {
-			printer.Print(line)
+			logger.Print(line)
 			if pagenum < endPagenum {
 				return pagenum, errEndOutOfRange
 			}
