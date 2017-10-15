@@ -13,53 +13,53 @@ type Logger struct {
 }
 
 // Print wraps fmt.Fprint(stdout, ...)
-func (printer *Logger) Print(args ...interface{}) (n int, err error) {
-	return fmt.Fprint(printer.Stdout, args...)
+func (logger *Logger) Print(args ...interface{}) (n int, err error) {
+	return fmt.Fprint(logger.Stdout, args...)
 }
 
 // Printf wraps fmt.Fprintf(stdout, ...)
-func (printer *Logger) Printf(format string, args ...interface{}) (n int, err error) {
-	return fmt.Fprintf(printer.Stdout, format, args...)
+func (logger *Logger) Printf(format string, args ...interface{}) (n int, err error) {
+	return fmt.Fprintf(logger.Stdout, format, args...)
 }
 
 // Println wraps fmt.Fprintln(stdout, ...)
-func (printer *Logger) Println(args ...interface{}) (n int, err error) {
-	return fmt.Fprintln(printer.Stdout, args...)
+func (logger *Logger) Println(args ...interface{}) (n int, err error) {
+	return fmt.Fprintln(logger.Stdout, args...)
 }
 
-func (printer *Logger) errPrintHeader() (n int, err error) {
-	return fmt.Fprintf(printer.Stderr, "%s: ", printer.Progname)
+func (logger *Logger) errPrintHeader() (n int, err error) {
+	return fmt.Fprintf(logger.Stderr, "%s: ", logger.Progname)
 }
 
 // ErrPrint wraps fmt.FPrint(os.Stderr, ...)
-func (printer *Logger) ErrPrint(args ...interface{}) (n int, err error) {
-	n, err = printer.errPrintHeader()
+func (logger *Logger) ErrPrint(args ...interface{}) (n int, err error) {
+	n, err = logger.errPrintHeader()
 	if err != nil {
 		return
 	}
-	n2, err := fmt.Fprint(printer.Stderr, args...)
+	n2, err := fmt.Fprint(logger.Stderr, args...)
 	n += n2
 	return
 }
 
 // ErrPrintf wraps fmt.FPrintf(os.Stderr, ...)
-func (printer *Logger) ErrPrintf(format string, args ...interface{}) (n int, err error) {
-	n, err = printer.errPrintHeader()
+func (logger *Logger) ErrPrintf(format string, args ...interface{}) (n int, err error) {
+	n, err = logger.errPrintHeader()
 	if err != nil {
 		return
 	}
-	n2, err := fmt.Fprintf(printer.Stderr, format, args...)
+	n2, err := fmt.Fprintf(logger.Stderr, format, args...)
 	n += n2
 	return
 }
 
 // ErrPrintln wraps fmt.FPrintln(os.Stderr, ...)
-func (printer *Logger) ErrPrintln(args ...interface{}) (n int, err error) {
-	n, err = printer.errPrintHeader()
+func (logger *Logger) ErrPrintln(args ...interface{}) (n int, err error) {
+	n, err = logger.errPrintHeader()
 	if err != nil {
 		return
 	}
-	n2, err := fmt.Fprintln(printer.Stderr, args...)
+	n2, err := fmt.Fprintln(logger.Stderr, args...)
 	n += n2
 	return
 }

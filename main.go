@@ -11,7 +11,7 @@ var logger *Logger
 var err error
 
 func main() {
-	// construct global printer
+	// construct global logger
 	logger = &Logger{
 		os.Args[0],
 		os.Stdout,
